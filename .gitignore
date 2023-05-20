@@ -1,0 +1,6 @@
+# Ignore ansible configuration files
+ansible/ansible.cfg
+inventory.ini
+
+# Ignore key-pairs
+ansible/.ssh/*

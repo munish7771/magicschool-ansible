@@ -1,0 +1,8 @@
+- name: Uninstall nginx server on host
+  hosts: ubuntu
+  become: true
+  tasks:
+    - name: Uninstall Nginx package
+      apt:
+        name: nginx
+        state: absent

@@ -1,0 +1,20 @@
+---
+- name: Creating 2 computes in a network
+  hosts: localhost
+  gather_facts: no
+  tasks:
+
+    - name: Create flavor for the compute
+      command: microstack.openstack flavor create --public m1.extra_tiny --id auto --ram 256 --disk 0 --vcpus 1 --rxtx-factor 1
+
+    - name: Create network
+      command: microstack.openstack create net1
+
+    - name: Create a subnet and assign to previous network
+      command: microstack.openstack subnet create subnet1 --network net1 --subnet-range 192.0.2.0/24
+
+    - name: Create keypair
+      command: microstack.openstack keypair create key1
+
+    - name: Create two servers in given network
+      command: microstack.openstack --insecure server create --flavor m1.extra_tiny --image cirros --network net1 --key-name key1 --min 2 --max 2 myhosts

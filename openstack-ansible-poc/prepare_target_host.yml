@@ -1,0 +1,50 @@
+---
+# Prerequisite for running this ansible script - 
+# 1. Create a ssh key pair on deployment host.
+# ssh-keygen -t rsa -b 4096
+# 2. Copy the key to target host.
+# ssh-copy-id ansible@<target-ip>
+- name: Prepare target host for running openstack-ansible (only ubuntu)
+  hosts: target-ubuntu
+  become: true
+
+  tasks:
+    - name: Update package source lists
+      ansible.builtin.apt:
+        update_cache: yes
+
+    - name: Upgrade system packages and kernel
+      ansible.builtin.apt:
+        upgrade: dist
+        autoremove: yes
+
+    - name: Install additional software packages
+      ansible.builtin.apt:
+        name:
+          - bridge-utils
+          - debootstrap
+          - openssh-server
+          - tcpdump
+          - vlan
+          - python3
+        state: present
+
+    - name: Install kernel extra package
+      ansible.builtin.apt:
+        name: linux-modules-extra-{{ ansible_kernel }}
+        state: present
+
+    - name: Reboot the target host
+      reboot:
+        reboot_timeout: 450
+        msg: "Rebooting the system"
+
+      # After reboot is complete
+
+      - name: Create physical volume
+        command: pvcreate --metadatasize 2048 physical_volume_device_path
+
+      - name: Create Volume Group
+        command: vgcreate cinder-volumes physical_volume_device_path
+    
+

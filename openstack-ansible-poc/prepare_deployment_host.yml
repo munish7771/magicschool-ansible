@@ -1,0 +1,42 @@
+---
+- name: Prepare deployment host for running openstack-ansible (only ubuntu)
+  hosts: deployment-ubuntu
+  become: true
+
+  tasks:
+  - name: Update apt cache, can fail if apt cache is already updated
+    ansible.builtin.apt:
+      update_cache: yes
+    ignore_errors: yes
+
+  - name: Upgrade apt and remove unnecessary packages afterwards.
+    ansible.builtin.apt:
+      upgrade: dist
+      autoremove: yes
+
+  - name: Install required packages on host.
+    ansible.builtin.apt:
+      name:
+        - xrdp
+        - build-essential
+        - git
+        - chrony
+        - openssh-server
+        - python3-dev
+        - sudo
+      state: present
+
+  - name: Clone openstack ansible repository
+    git:
+      repo: https://github.com/openstack/openstack-ansible.git
+      dest: /opt/openstack-ansible
+      version: master
+
+  - name: Execute ansible bootstrap script
+    script: 
+      src: /opt/openstack-ansible/scripts/bootstrap-ansible.sh
+      remote_src: yes
+
+  - name: Generate RSA key-pair (will be used later to ssh into target host)
+    command: ssh-keygen -t rsa -b 4096 -f ~/.ssh/id_rsa -N ''
+

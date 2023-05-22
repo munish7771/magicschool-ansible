@@ -5,7 +5,7 @@
   tasks:
 
     - name: Create flavor for the compute
-      command: microstack.openstack flavor create --public flavor1 --id auto --ram 256 --disk 25 --vcpus 1 --rxtx-factor 1
+      command: microstack.openstack flavor create --public flavor1 --id auto --ram 512 --disk 25 --vcpus 2 --rxtx-factor 1
       ignore_errors: yes
 
     - name: Create network

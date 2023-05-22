@@ -9,7 +9,7 @@
       ignore_errors: yes
 
     - name: Create network
-      command: microstack.openstack create network net1
+      command: microstack.openstack network create net1
       ignore_errors: yes
 
     - name: Create a subnet and assign to previous network
